@@ -1,0 +1,24 @@
+---
+- name: Install and configure Keycloak
+  # replace with yours
+  hosts: ondeu
+  become: yes
+
+  vars:
+    src_dir: ../keycloak/
+    dst_dir: /opt/docker/keycloak
+
+  tasks:
+    - name: Copy configs
+      copy: 
+        src: "{{ src_dir }}"
+        dest: "{{ dst_dir }}"
+        mode: 0555
+
+    - name: Create network
+      shell:
+        cmd: "docker network create traefik || true"
+
+    - name: Start service
+      shell:
+        cmd: "docker-compose --env-file {{ dst_dir }}/.env -f {{ dst_dir }}/docker-compose.yml up -d"
